@@ -33,17 +33,18 @@ load_type = "checkpoint"
 ms_ckpt = f"./output/{log_id}/{load_type}/ms_adapter.bin"
 
 image_processor = CLIPImageProcessor()
+torch_dtype = torch.float16 if device == "cuda" else torch.float32
 
 # load SDXL pipeline
 pipe = StableDiffusionXLPipeline.from_pretrained(
     base_model_path,
-    torch_dtype=torch.float16,
+    torch_dtype=torch_dtype,
     add_watermarker=False,
 )
 pipe.to(device)
 
 image_encoder_type = "clip"
-image_encoder = CLIPVisionModelWithProjection.from_pretrained(image_encoder_path).to(device, dtype=torch.float16)
+image_encoder = CLIPVisionModelWithProjection.from_pretrained(image_encoder_path).to(device, dtype=torch_dtype)
 image_encoder_projection_dim = image_encoder.config.projection_dim
 num_tokens = 16
 image_proj_type="resampler"
@@ -59,9 +60,9 @@ image_proj_model = Resampler(
     ff_mult=4,
     latent_init_mode=latent_init_mode,
     phrase_embeddings_dim=pipe.text_encoder.config.projection_dim,
-).to(device, dtype=torch.float16)
+).to(device, dtype=torch_dtype)
 ms_model = MSAdapter(pipe.unet, image_proj_model, ckpt_path=ms_ckpt, device=device, num_tokens=num_tokens)
-ms_model.to(device, dtype=torch.float16)
+ms_model.to(device, dtype=torch_dtype)
 
 image0 = Image.open("./examples/example_dog.jpg")
 image1 = Image.open("./examples/example_cat.jpg")
