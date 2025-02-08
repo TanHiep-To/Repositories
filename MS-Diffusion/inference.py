@@ -26,7 +26,7 @@ def get_phrases_idx(tokenizer, phrases, prompt):
 
 base_model_path = "stabilityai/stable-diffusion-xl-base-1.0"
 image_encoder_path = "laion/CLIP-ViT-bigG-14-laion2B-39B-b160k"
-device = "cuda"
+device = "cpu"
 result_path = "./res"
 log_id = "test"
 load_type = "checkpoint"

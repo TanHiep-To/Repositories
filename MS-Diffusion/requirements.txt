@@ -10,3 +10,4 @@ transformers==4.35.2
 tensorboard
 scipy
 opencv-python
+huggingface_hub==0.25.0
